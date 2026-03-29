@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="mska_data/mska_data.csproj" />
+  <Project Path="mska_service/mska_service.csproj" />
+  <Project Path="mska_web/mska_web.csproj" />
+</Solution>
