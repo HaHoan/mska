@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bài thi</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+        font-family: 'Nunito', sans-serif;
+        background: #f4f7fb;
+        }
+
+        /* CARD */
+        .test-card {
+        max-width: 650px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* HEADER */
+        .test-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+
+        .timer {
+        font-weight: 700;
+        color: #ff6a00;
+        }
+
+        /* PROGRESS */
+        .progress {
+        height: 8px;
+        border-radius: 10px;
+        margin: 10px 0 20px;
+        }
+
+        /* QUESTION NAV */
+        .question-nav {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        }
+
+        .question-item {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #eee;
+        text-align: center;
+        line-height: 32px;
+        font-weight: 700;
+        cursor: pointer;
+        }
+
+        .question-item.active {
+        background: #4facfe;
+        color: #fff;
+        }
+
+        .question-item.answered {
+        background: #28c76f;
+        color: #fff;
+        }
+
+        /* OPTIONS */
+        .option {
+        cursor: pointer;
+        text-align: center;
+        }
+
+        .option img {
+        width: 100%;
+        border-radius: 15px;
+        border: 3px solid transparent;
+        transition: 0.3s;
+        }
+
+        .option.selected img {
+        border-color: #4facfe;
+        }
+
+        /* BUTTON */
+        .btn-submit {
+        background: linear-gradient(135deg, #ff9a3c, #ff6a00);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 25px;
+        padding: 10px;
+        width: 100%;
+        margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="test-card">
+
+        <!-- HEADER -->
+        <div class="test-header">
+            <div><strong>📘 Bài thi tuần</strong></div>
+            <div class="timer" id="timer">02:00</div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress">
+            <div class="progress-bar bg-warning" id="progressBar" style="width:0%"></div>
+        </div>
+
+        <!-- QUESTION NAV -->
+        <div class="question-nav" id="questionNav"></div>
+
+        <!-- QUESTION -->
+        <p><strong id="questionText">Câu hỏi</strong></p>
+
+        <!-- OPTIONS -->
+        <div class="row text-center" id="options"></div>
+
+        <!-- SUBMIT -->
+        <button class="btn-submit" id="submitBtn">Nộp bài</button>
+
+    </div>
+
+    <script>
+        const questions = [
+        { q: "Chọn hình đúng 1", answers: ["A","B","C"] },
+        { q: "Chọn hình đúng 2", answers: ["A","B","C"] },
+        { q: "Chọn hình đúng 3", answers: ["A","B","C"] },
+        { q: "Chọn hình đúng 4", answers: ["A","B","C"] }
+        ];
+
+        let current = 0;
+        let answers = {};
+        let time = 120;
+
+        // render nav
+        function renderNav() {
+        let html = "";
+        questions.forEach((q, i) => {
+        let cls = "question-item";
+        if (i === current) cls += " active";
+        if (answers[i]) cls += " answered";
+
+        html += `<div class="${cls}" data-i="${i}">${i+1}</div>`;
+        });
+        $("#questionNav").html(html);
+        }
+
+        // render question
+        function renderQuestion() {
+        let q = questions[current];
+        $("#questionText").text(q.q);
+
+        let html = "";
+        q.answers.forEach(a => {
+        let selected = answers[current] === a ? "selected" : "";
+        html += `
+        <div class="col-4 option ${selected}" data-value="${a}">
+        <img src="https://picsum.photos/200?random=${Math.random()}">
+        <div>${a}</div>
+        </div>`;
+        });
+
+        $("#options").html(html);
+        }
+
+        // chọn đáp án
+        $(document).on("click", ".option", function () {
+        $(".option").removeClass("selected");
+        $(this).addClass("selected");
+
+        answers[current] = $(this).data("value");
+        updateProgress();
+        renderNav();
+        });
+
+        // chuyển câu
+        $(document).on("click", ".question-item", function () {
+        current = $(this).data("i");
+        renderNav();
+        renderQuestion();
+        });
+
+        // progress
+        function updateProgress() {
+        let percent = Object.keys(answers).length / questions.length * 100;
+        $("#progressBar").css("width", percent + "%");
+        }
+
+        // timer
+        function startTimer() {
+        setInterval(() => {
+        time--;
+        let m = String(Math.floor(time / 60)).padStart(2,'0');
+        let s = String(time % 60).padStart(2,'0');
+        $("#timer").text(`${m}:${s}`);
+
+        if (time <= 0) {
+        alert("Hết giờ!");
+        }
+        }, 1000);
+        }
+
+        // submit
+        $("#submitBtn").click(function () {
+        alert("Bạn đã nộp bài!");
+        });
+
+        // init
+        renderNav();
+        renderQuestion();
+        startTimer();
+    </script>
+
+</body>
+</html>
